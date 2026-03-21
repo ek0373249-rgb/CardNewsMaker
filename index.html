@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-width=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
+
 <body>
     <header class="app-header">
         <h1>✨ 힙한 카드뉴스 메이커</h1>
@@ -18,18 +20,17 @@
             <div class="control-group">
                 <h3>1. 표지 (첫 장) 설정</h3>
                 <label>메인 제목</label>
-                <textarea id="cover-title" placeholder="큰 글씨 제목" rows="2">남친 사줬다가
-뺏어 입고 싶은 브랜드 5</textarea>
-                
+                <textarea id="cover-title" placeholder="큰 글씨 제목" rows="2">큰 글씨 제목</textarea>
+
                 <label>서브 타이틀 (선택)</label>
-                <textarea id="cover-subtitle" placeholder="작은 글씨 부제목" rows="1">: 요즘 래퍼들도 주목하는 힙한 브랜드</textarea>
+                <textarea id="cover-subtitle" placeholder="작은 글씨 부제목" rows="1">: 부제</textarea>
 
                 <label>배경 썸네일 (선택)</label>
                 <input type="file" id="cover-bg-upload" accept="image/*">
-                
-                <label>배경 투명도 (<span id="opacity-val">100</span>%)</label>
-                <input type="range" id="cover-bg-opacity" min="0" max="1" step="0.05" value="1">
-                
+
+                <label>배경 투명도 (<span id="opacity-val">75</span>%)</label>
+                <input type="range" id="cover-bg-opacity" min="0" max="1" step="0.05" value="0.75">
+
                 <div class="flex-row" style="margin-top: 15px;">
                     <input type="checkbox" id="cover-grad-enable" checked style="width:auto; cursor:pointer;">
                     <label for="cover-grad-enable" style="margin:0; cursor:pointer;">그라데이션 (가독성 향상)</label>
@@ -43,7 +44,7 @@
                         <option value="circle">가운데 원형 중심</option>
                     </select>
                 </div>
-                
+
                 <label>텍스트 정렬 위치</label>
                 <select id="cover-text-align">
                     <option value="flex-end-left" selected>좌측 하단 (힙한 예시 스타일)</option>
@@ -65,9 +66,8 @@
             <div class="control-group">
                 <h3>3. 아웃트로 (마지막 장) 설정</h3>
                 <label>마무리 멘트 (콜투액션)</label>
-                <textarea id="outro-text" placeholder="마무리 멘트" rows="2">도움이 되셨다면
-좋아요와 저장, 팔로우를 잊지마세요!</textarea>
-                
+                <textarea id="outro-text" placeholder="마무리 멘트" rows="2">노잼이어도 괜찮아 공부만 하면 장땡</textarea>
+
                 <label>로고 이미지 (선택)</label>
                 <input type="file" id="logo-upload" accept="image/*">
             </div>
@@ -107,4 +107,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>
