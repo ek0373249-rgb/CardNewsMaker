@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const coverTextAlign = document.getElementById('cover-text-align');
 
     const bodyContentInput = document.getElementById('body-content');
-    const outroTextInput = document.getElementById('outro-text');
-    const logoUpload = document.getElementById('logo-upload');
     
     const bgColorPicker = document.getElementById('bg-color');
     const textColorPicker = document.getElementById('text-color');
@@ -23,12 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // State
     let coverBgUrl = '';
-    let logoUrl = '';
 
     // Events
     function attachEventListeners() {
         const inputs = [
-            coverTitleInput, coverSubtitleInput, bodyContentInput, outroTextInput,
+            coverTitleInput, coverSubtitleInput, bodyContentInput,
             bgColorPicker, textColorPicker, primaryColorPicker, coverGradColor
         ];
         inputs.forEach(input => input.addEventListener('input', renderCards));
@@ -43,11 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         coverBgUpload.addEventListener('change', (e) => handleImageUpload(e, (url) => {
             coverBgUrl = url;
-            renderCards();
-        }));
-
-        logoUpload.addEventListener('change', (e) => handleImageUpload(e, (url) => {
-            logoUrl = url;
             renderCards();
         }));
 
@@ -138,8 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${coverBgUrl ? `<div class="card-bg-layer" style="background-image: url('${coverBgUrl}'); opacity: 0.5; transform: scale(1.5);"></div>` : ''}
             <div class="card-grad-layer" style="background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 60%);"></div>
             <div class="card-inner">
-                <div class="outro-text">${escapeHtml(outroTextInput.value)}</div>
-                ${logoUrl ? `<img src="${logoUrl}" class="outro-logo" alt="Logo">` : ''}
+                <div class="outro-text">소소한 보험상식 가져가세요</div>
                 <div class="page-number" style="color: ${primaryColor}">${outroNum}</div>
             </div>
         `;
