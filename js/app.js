@@ -204,11 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function downloadAllCards() {
-        btnDownloadAll.innerHTML = '⏳ 압축 중... 잠시만 기다려주세요';
+        btnDownloadAll.innerHTML = '⏳ 다운로드 중... 잠시만 기다려주세요';
         btnDownloadAll.disabled = true;
 
         try {
-            const zip = new JSZip();
             const cards = document.querySelectorAll('.card-canvas');
             
             for (let i = 0; i < cards.length; i++) {
@@ -220,25 +219,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const fileName = cards[i].getAttribute('data-filename') || `card_${i+1}.png`;
-                zip.file(fileName, blob);
-            }
-
-            const content = await zip.generateAsync({ type: 'blob' });
-            if (window.saveAs) {
-                window.saveAs(content, '카드뉴스_일괄다운로드.zip');
-            } else {
-                const url = URL.createObjectURL(content);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = '카드뉴스_일괄다운로드.zip';
-                a.click();
-                URL.revokeObjectURL(url);
+                
+                if (window.saveAs) {
+                    window.saveAs(blob, fileName);
+                } else {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+                
+                // 약간의 지연 시간을 주어 브라우저의 다중 다운로드 차단을 방지
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
         } catch (err) {
             console.error('일괄 다운로드 오류:', err);
-            alert('ZIP 생성 중 오류가 발생했습니다.');
+            alert('다운로드 중 오류가 발생했습니다.');
         } finally {
-            btnDownloadAll.innerHTML = '전체 일괄 다운로드 (ZIP)';
+            btnDownloadAll.innerHTML = '전체 일괄 다운로드';
             btnDownloadAll.disabled = false;
         }
     }
