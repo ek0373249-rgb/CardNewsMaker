@@ -135,6 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Outro Page
         const outroNum = bodyPages.length + 2;
         const outroHtml = `
+            ${coverBgUrl ? `<div class="card-bg-layer" style="background-image: url('${coverBgUrl}'); opacity: 0.5; transform: scale(1.5);"></div>` : ''}
+            <div class="card-grad-layer" style="background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 60%);"></div>
             <div class="card-inner">
                 <div class="outro-text">${escapeHtml(outroTextInput.value)}</div>
                 ${logoUrl ? `<img src="${logoUrl}" class="outro-logo" alt="Logo">` : ''}
