@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-width=1.0">
     <title>힙한 카드뉴스 메이커</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=3">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 </head>
 
@@ -65,7 +65,9 @@
 
             <div class="control-group">
                 <h3>3. 아웃트로 (마지막 장) 설정</h3>
-                <p class="help-text">마지막 장은 텍스트가 <strong>"소소한 보험상식 가져가세요"</strong>로 고정되며,<br>가운데 정렬로 배치됩니다. (표지 배경 스타일이 자동 적용됩니다)</p>
+                <label>마지막 장 텍스트</label>
+                <textarea id="outro-content" placeholder="마지막 인사말" rows="2">소소한 보험상식 가져가세요</textarea>
+                <p class="help-text">가운데 정렬로 배치됩니다. (표지 배경 스타일이 자동 적용됩니다)</p>
             </div>
 
             <div class="control-group">
@@ -101,7 +103,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <script src="js/app.js?v=2"></script>
+    <script src="js/app.js?v=3"></script>
 </body>
 
 </html>

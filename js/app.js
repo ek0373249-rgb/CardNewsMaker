@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const coverTextAlign = document.getElementById('cover-text-align');
 
     const bodyContentInput = document.getElementById('body-content');
+    const outroContentInput = document.getElementById('outro-content');
     
     const bgColorPicker = document.getElementById('bg-color');
     const textColorPicker = document.getElementById('text-color');
@@ -25,10 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // Events
     function attachEventListeners() {
         const inputs = [
-            coverTitleInput, coverSubtitleInput, bodyContentInput,
+            coverTitleInput, coverSubtitleInput, bodyContentInput, outroContentInput,
             bgColorPicker, textColorPicker, primaryColorPicker, coverGradColor
         ];
         inputs.forEach(input => input.addEventListener('input', renderCards));
+
+        const textInputs = [coverTitleInput, coverSubtitleInput, bodyContentInput, outroContentInput];
+        textInputs.forEach(input => {
+            let isCleared = false;
+            input.addEventListener('focus', () => {
+                if (!isCleared) {
+                    input.value = '';
+                    isCleared = true;
+                    renderCards();
+                }
+            });
+        });
         
         const changes = [coverGradEnable, coverGradDir, coverTextAlign];
         changes.forEach(select => select.addEventListener('change', renderCards));
@@ -126,11 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 3. Outro Page
         const outroNum = bodyPages.length + 2;
+        const outroText = outroContentInput ? outroContentInput.value : '소소한 보험상식 가져가세요';
         const outroHtml = `
             ${coverBgUrl ? `<div class="card-bg-layer" style="background-image: url('${coverBgUrl}'); opacity: 0.5; transform: scale(1.5);"></div>` : ''}
             <div class="card-grad-layer" style="background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 60%);"></div>
             <div class="card-inner">
-                <div class="outro-text">소소한 보험상식 가져가세요</div>
+                <div class="outro-text">${escapeHtml(outroText)}</div>
                 <div class="page-number" style="color: ${primaryColor}">${outroNum}</div>
             </div>
         `;
@@ -178,18 +192,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 useCORS: true,
                 backgroundColor: bgColorPicker.value
             });
-            canvas.toBlob(blob => {
-                if (window.saveAs) {
-                    window.saveAs(blob, filename);
-                } else {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = filename;
-                    a.click();
-                    URL.revokeObjectURL(url);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const file = new File([blob], filename, { type: 'image/png' });
+            
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: filename
+                    });
+                    return;
+                } catch (e) {
+                    console.log('Share failed or cancelled', e);
                 }
-            }, 'image/png');
+            }
+            
+            if (window.saveAs) {
+                window.saveAs(blob, filename);
+            } else {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
         } catch (err) {
             console.error('다운로드 오류:', err);
             alert('이미지 생성 중 오류가 발생했습니다.');
@@ -197,11 +224,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function downloadAllCards() {
-        btnDownloadAll.innerHTML = '⏳ 다운로드 중... 잠시만 기다려주세요';
+        btnDownloadAll.innerHTML = '⏳ 처리 중... 잠시만 기다려주세요';
         btnDownloadAll.disabled = true;
 
         try {
             const cards = document.querySelectorAll('.card-canvas');
+            const files = [];
             
             for (let i = 0; i < cards.length; i++) {
                 const canvas = await html2canvas(cards[i], {
@@ -212,23 +240,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
                 const fileName = cards[i].getAttribute('data-filename') || `card_${i+1}.png`;
-                
-                if (window.saveAs) {
-                    window.saveAs(blob, fileName);
-                } else {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                }
-                
-                // 약간의 지연 시간을 주어 브라우저의 다중 다운로드 차단을 방지
-                await new Promise(resolve => setTimeout(resolve, 300));
+                files.push(new File([blob], fileName, { type: 'image/png' }));
             }
+            
+            if (navigator.canShare && navigator.canShare({ files: files })) {
+                try {
+                    await navigator.share({
+                        files: files,
+                        title: '카드뉴스',
+                        text: '생성된 카드뉴스 이미지입니다.'
+                    });
+                } catch (e) {
+                    console.log('Share failed or cancelled', e);
+                    fallbackDownloadMultiple(files);
+                }
+            } else {
+                fallbackDownloadMultiple(files);
+            }
+            
         } catch (err) {
             console.error('일괄 다운로드 오류:', err);
             alert('다운로드 중 오류가 발생했습니다.');
@@ -236,6 +265,25 @@ document.addEventListener('DOMContentLoaded', () => {
             btnDownloadAll.innerHTML = '전체 일괄 다운로드';
             btnDownloadAll.disabled = false;
         }
+    }
+
+    function fallbackDownloadMultiple(files) {
+        files.forEach((file, index) => {
+            setTimeout(() => {
+                if (window.saveAs) {
+                    window.saveAs(file, file.name);
+                } else {
+                    const url = URL.createObjectURL(file);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = file.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            }, index * 300);
+        });
     }
 
     // Start
